@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Niva Sell</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: #0a0f1e;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header h1 {
+            color: #00ff88;
+            font-size: 28px;
+        }
+        
+        .admin-badge {
+            background: #ffaa00;
+            color: #0a0f1e;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #1E2333;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #2A2F3F;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: #1E2333;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid #2A2F3F;
+            transition: 0.3s;
+        }
+        
+        .tab:hover {
+            border-color: #00ff88;
+        }
+        
+        .tab.active {
+            background: #00ff88;
+            color: #0a0f1e;
+            border-color: #00ff88;
+        }
+        
+        .orders-container {
+            background: #1E2333;
+            border-radius: 20px;
+            padding: 20px;
+        }
+        
+        .order-card {
+            background: #0f1422;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+            transition: 0.3s;
+        }
+        
+        .order-card.pending {
+            border-left-color: #ffaa00;
+        }
+        
+        .order-card.approved {
+            border-left-color: #00ff88;
+        }
+        
+        .order-card.rejected {
+            border-left-color: #ff4444;
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .order-id {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background: #ffaa00;
+            color: #0a0f1e;
+        }
+        
+        .status-approved {
+            background: #00ff88;
+            color: #0a0f1e;
+        }
+        
+        .status-rejected {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            background: #1E2333;
+            padding: 12px;
+            border-radius: 10px;
+        }
+        
+        .detail-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+        
+        .approve-btn, .reject-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .approve-btn {
+            background: #00ff88;
+            color: #0a0f1e;
+        }
+        
+        .approve-btn:hover {
+            background: #00cc66;
+        }
+        
+        .reject-btn {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .reject-btn:hover {
+            background: #cc3333;
+        }
+        
+        .user-info {
+            font-size: 14px;
+            color: #00ff88;
+            margin-bottom: 5px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #888;
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            background: #1E2333;
+            border: 1px solid #2A2F3F;
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #00ff88;
+        }
+        
+        @media (max-width: 600px) {
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                justify-content: stretch;
+            }
+            
+            .approve-btn, .reject-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 অ্যাডমিন প্যানেল</h1>
+            <div class="admin-badge">⚡ অ্যাডমিন এক্সেস</div>
+        </div>
+
+        <!-- পরিসংখ্যান -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-label">মোট অর্ডার</div>
+                <div class="stat-value" id="totalOrders">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">⏳ পেন্ডিং</div>
+                <div class="stat-value" id="pendingCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">✅ এপ্রুভড</div>
+                <div class="stat-value" id="approvedCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">❌ রিজেক্টেড</div>
+                <div class="stat-value" id="rejectedCount">0</div>
+            </div>
+        </div>
+
+        <!-- সার্চ বক্স -->
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 অর্ডার আইডি বা ইউজারনেম দিয়ে সার্চ করুন..." onkeyup="filterOrders()">
+        </div>
+
+        <!-- ট্যাব -->
+        <div class="tabs">
+            <div class="tab active" onclick="filterByStatus('all')">সবগুলি</div>
+            <div class="tab" onclick="filterByStatus('pending')">⏳ পেন্ডিং</div>
+            <div class="tab" onclick="filterByStatus('approved')">✅ এপ্রুভড</div>
+            <div class="tab" onclick="filterByStatus('rejected')">❌ রিজেক্টেড</div>
+        </div>
+
+        <!-- অর্ডার লিস্ট -->
+        <div class="orders-container" id="ordersContainer">
+            <div class="empty-state">📭 কোনো অর্ডার নেই</div>
+        </div>
+    </div>
+
+    <script>
+        // অ্যাডমিন পাসওয়ার্ড (আপনার সেট করা)
+        const ADMIN_PASSWORD = 'niva123'; // আপনি চাইলে পরিবর্তন করতে পারেন
+        
+        // চেক করা যে ইউজার অ্যাডমিন কিনা
+        function checkAdmin() {
+            const password = prompt('🔐 অ্যাডমিন প্যানেলের জন্য পাসওয়ার্ড দিন:');
+            if (password !== ADMIN_PASSWORD) {
+                alert('❌ ভুল পাসওয়ার্ড!');
+                window.location.href = 'https://t.me/your_bot'; // আপনার বটের লিংক দিন
+                return false;
+            }
+            return true;
+        }
+        
+        // প্রথমে পাসওয়ার্ড চেক করুন
+        if (!checkAdmin()) {
+            throw new Error('Access denied');
+        }
+        
+        // বটের তথ্য (আপনার বটের টোকেন দিন)
+        const BOT_TOKEN = '8479046315:AAFmBZplaAJRWsa16xuveinsWCn400i7x3w';
+        const ADMIN_ID = '7816083990';
+        
+        // গ্লোবাল ভেরিয়েবল
+        let allOrders = [];
+        let currentFilter = 'all';
+        let searchTerm = '';
+        
+        // লোকাল স্টোরেজ থেকে অর্ডার লোড
+        function loadOrders() {
+            const keys = Object.keys(localStorage);
+            allOrders = [];
+            
+            keys.forEach(key => {
+                if (key.startsWith('orders_')) {
+                    try {
+                        const userOrders = JSON.parse(localStorage.getItem(key));
+                        allOrders = [...allOrders, ...userOrders];
+                    } catch (e) {
+                        console.log('Error loading orders:', e);
+                    }
+                }
+            });
+            
+            // আইডি অনুযায়ী সাজানো (নতুন আগে)
+            allOrders.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
+            
+            updateStats();
+            displayOrders();
+        }
+        
+        // পরিসংখ্যান আপডেট
+        function updateStats() {
+            document.getElementById('totalOrders').textContent = allOrders.length;
+            document.getElementById('pendingCount').textContent = allOrders.filter(o => o.status === 'pending').length;
+            document.getElementById('approvedCount').textContent = allOrders.filter(o => o.status === 'approved').length;
+            document.getElementById('rejectedCount').textContent = allOrders.filter(o => o.status === 'rejected').length;
+        }
+        
+        // অর্ডার ফিল্টার
+        function filterOrders() {
+            searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            displayOrders();
+        }
+        
+        function filterByStatus(status) {
+            currentFilter = status;
+            
+            // ট্যাব আপডেট
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayOrders();
+        }
+        
+        // অর্ডার ডিসপ্লে
+        function displayOrders() {
+            let filteredOrders = allOrders;
+            
+            // স্ট্যাটাস ফিল্টার
+            if (currentFilter !== 'all') {
+                filteredOrders = filteredOrders.filter(o => o.status === currentFilter);
+            }
+            
+            // সার্চ ফিল্টার
+            if (searchTerm) {
+                filteredOrders = filteredOrders.filter(o => 
+                    (o.id && o.id.toLowerCase().includes(searchTerm)) ||
+                    (o.sender && o.sender.toLowerCase().includes(searchTerm)) ||
+                    (o.account && o.account.includes(searchTerm))
+                );
+            }
+            
+            const container = document.getElementById('ordersContainer');
+            
+            if (filteredOrders.length === 0) {
+                container.innerHTML = '<div class="empty-state">📭 কোনো অর্ডার নেই</div>';
+                return;
+            }
+            
+            let html = '';
+            filteredOrders.forEach(order => {
+                const statusClass = order.status === 'approved' ? 'approved' : 
+                                   order.status === 'rejected' ? 'rejected' : 'pending';
+                
+                const statusText = order.status === 'approved' ? '✅ এপ্রুভড' :
+                                  order.status === 'rejected' ? '❌ রিজেক্টেড' : '⏳ পেন্ডিং';
+                
+                // ইউজার আইডি বের করা
+                let userId = 'অজানা';
+                for (let key in localStorage) {
+                    if (key.startsWith('orders_')) {
+                        try {
+                            const orders = JSON.parse(localStorage.getItem(key));
+                            if (orders.some(o => o.id === order.id)) {
+                                userId = key.replace('orders_', '');
+                                break;
+                            }
+                        } catch (e) {}
+                    }
+                }
+                
+                html += `
+                    <div class="order-card ${statusClass}">
+                        <div class="order-header">
+                            <div>
+                                <span class="order-id">${order.id || 'N/A'}</span>
+                                <div class="user-info">👤 ইউজার আইডি: ${userId}</div>
+                            </div>
+                            <span class="order-status status-${order.status}">${statusText}</span>
+                        </div>
+                        
+                        <div class="order-details">
+                            <div class="detail-item">
+                                <div class="detail-label">🪙 কয়েন</div>
+                                <div class="detail-value">${order.coin || 'Niva Coin'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">💰 পরিমাণ</div>
+                                <div class="detail-value">${order.amount || '0'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">👤 সেন্ডার</div>
+                                <div class="detail-value">${order.sender || 'N/A'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">🏦 পেমেন্ট</div>
+                                <div class="detail-value">${order.method || 'Bkash'} - ${order.account || 'N/A'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">💵 টোটাল</div>
+                                <div class="detail-value">${order.total || '0'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">⏰ সময়</div>
+                                <div class="detail-value">${order.time || 'N/A'}</div>
+                            </div>
+                        </div>
+                        
+                        ${order.status === 'pending' ? `
+                            <div class="action-buttons">
+                                <button class="approve-btn" onclick="updateOrderStatus('${order.id}', 'approved')">✅ এপ্রুভ করুন</button>
+                                <button class="reject-btn" onclick="updateOrderStatus('${order.id}', 'rejected')">❌ রিজেক্ট করুন</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // অর্ডার স্ট্যাটাস আপডেট
+        function updateOrderStatus(orderId, newStatus) {
+            // সব ইউজারের অর্ডার চেক করা
+            const keys = Object.keys(localStorage);
+            
+            keys.forEach(key => {
+                if (key.startsWith('orders_')) {
+                    try {
+                        let orders = JSON.parse(localStorage.getItem(key));
+                        const orderIndex = orders.findIndex(o => o.id === orderId);
+                        
+                        if (orderIndex !== -1) {
+                            // স্ট্যাটাস আপডেট
+                            orders[orderIndex].status = newStatus;
+                            localStorage.setItem(key, JSON.stringify(orders));
+                            
+                            // যদি এপ্রুভ করা হয়, তাহলে সাকসেস কাউন্ট বাড়ানো
+                            if (newStatus === 'approved') {
+                                const userId = key.replace('orders_', '');
+                                const successKey = 'successCount_' + userId;
+                                let successCount = parseInt(localStorage.getItem(successKey)) || 0;
+                                successCount++;
+                                localStorage.setItem(successKey, successCount);
+                                
+                                // ইউজারকে নোটিফিকেশন পাঠানো
+                                sendUserNotification(userId, orders[orderIndex]);
+                            }
+                            
+                            // অ্যাডমিনকে নোটিফিকেশন
+                            sendAdminNotification(orderId, newStatus);
+                            
+                            alert(`✅ অর্ডার ${newStatus === 'approved' ? 'এপ্রুভ' : 'রিজেক্ট'} করা হয়েছে!`);
+                            
+                            // রিলোড
+                            loadOrders();
+                            return;
+                        }
+                    } catch (e) {
+                        console.log('Error updating order:', e);
+                    }
+                }
+            });
+        }
+        
+        // ইউজারকে নোটিফিকেশন পাঠানো
+        async function sendUserNotification(userId, order) {
+            const message = `
+✅ **আপনার অর্ডার এপ্রুভ হয়েছে!**
+
+🪙 **কয়েন:** ${order.coin || 'Niva Coin'}
+💰 **পরিমাণ:** ${order.amount}
+💵 **পাবেন:** ${order.total}
+
+🎉 **সাকসেস কাউন্ট +১ হয়েছে!**
+
+ধন্যবাদ আমাদের সাথে ব্যবসা করার জন্য।
+            `;
+            
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (error) {
+                console.log('Error sending user notification:', error);
+            }
+        }
+        
+        // অ্যাডমিনকে নোটিফিকেশন
+        async function sendAdminNotification(orderId, status) {
+            const message = `
+📊 **অর্ডার আপডেট**
+
+🆔 অর্ডার আইডি: ${orderId}
+📌 স্ট্যাটাস: ${status === 'approved' ? '✅ এপ্রুভড' : '❌ রিজেক্টেড'}
+
+অ্যাডমিন একশন সম্পন্ন হয়েছে।
+            `;
+            
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: ADMIN_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (error) {
+                console.log('Error sending admin notification:', error);
+            }
+        }
+        
+        // লোকাল স্টোরেজ ক্লিয়ার করার অপশন (শুধু অ্যাডমিনের জন্য)
+        function clearAllOrders() {
+            if (confirm('⚠️ সতর্কতা! সব অর্ডার ডিলিট হবে। আপনি কি নিশ্চিত?')) {
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.startsWith('orders_') || key.startsWith('successCount_')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                loadOrders();
+                alert('✅ সব অর্ডার ডিলিট করা হয়েছে!');
+            }
+        }
+        
+        // এক্সপোর্ট অর্ডার (CSV)
+        function exportOrders() {
+            let csv = 'Order ID,User ID,Coin,Amount,Sender,Method,Account,Total,Status,Time\n';
+            
+            const keys = Object.keys(localStorage);
+            keys.forEach(key => {
+                if (key.startsWith('orders_')) {
+                    try {
+                        const userId = key.replace('orders_', '');
+                        const orders = JSON.parse(localStorage.getItem(key));
+                        
+                        orders.forEach(order => {
+                            csv += `${order.id || ''},${userId},${order.coin || 'Niva'},${order.amount || ''},${order.sender || ''},${order.method || ''},${order.account || ''},${order.total || ''},${order.status || ''},${order.time || ''}\n`;
+                        });
+                    } catch (e) {}
+                }
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'niva_orders.csv';
+            a.click();
+        }
+        
+        // লোড
+        loadOrders();
+        
+        // প্রতি ১০ সেকেন্ডে রিফ্রেশ
+        setInterval(loadOrders, 10000);
+    </script>
+</body>
+ </html>
